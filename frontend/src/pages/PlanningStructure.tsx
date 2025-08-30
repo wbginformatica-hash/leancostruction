@@ -5,7 +5,7 @@ import { exportToXLSX, exportToXML } from '../utils/exportUtils';
 const PlanningStructure = ({ enterprise }) => {
   const { activities, setActivities, sites, setSites, packages, setPackages } = useProjectContext();
   const [activeTab, setActiveTab] = useState('activities');
-  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editingItem, setEditingItem] = useState(null);
   const [showNewForm, setShowNewForm] = useState(false);
 
   // Mock data structure for planning

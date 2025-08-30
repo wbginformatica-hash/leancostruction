@@ -97,17 +97,7 @@ export default function App() {
               }
             />
 
-            {/* Test routes - bypass authentication */}
-          <Route
-            path="/test-consolidacao"
-            element={<Consolidation enterprise={{ id: 1, name: 'Empreendimento Teste' }} />}
-          />
-          <Route
-            path="/test-planejamento"
-            element={<PlanningStructure enterprise={{ id: 1, name: 'Empreendimento Teste' }} />}
-          />
-
-          {/* Kanban */}
+            {/* Kanban */}
             <Route
               path="/kanban"
               element={
