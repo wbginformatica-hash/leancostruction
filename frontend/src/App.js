@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { ProjectProvider } from "./contexts/ProjectContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import EstruturaEmpreendimento from "./pages/EstruturaEmpreendimento";
 import Planejamento from "./pages/Planejamento";
 import GestaoPacotes from "./pages/GestaoPacotes";
 import ConsolidacaoMedicao from "./pages/ConsolidacaoMedicao";
+import Consolidation from "./pages/Consolidation";
+import PlanningStructure from "./pages/PlanningStructure";
 import SetupImportacoes from "./pages/SetupImportacoes";
 import KanbanView from "./pages/KanbanView";
 import "./pages/styles.css";
@@ -28,92 +31,104 @@ export default function App() {
   }
 
   return (
-    <Router>
-      <div className="main-bg">
-        <Routes>
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+    <ProjectProvider>
+      <Router>
+        <div className="main-bg">
+          <Routes>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
-          {/* Dashboard de Empreendimentos */}
+            {/* Dashboard de Empreendimentos */}
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Dashboard onSelectEnterprise={setEnterprise} />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Estrutura do Empreendimento */}
+            <Route
+              path="/eap"
+              element={
+                <PrivateRoute>
+                  {enterprise ? <EstruturaEmpreendimento enterprise={enterprise} /> : <Navigate to="/" />}
+                </PrivateRoute>
+              }
+            />
+
+            {/* Planejamento */}
+            <Route
+              path="/planejamento"
+              element={
+                <PrivateRoute>
+                  {enterprise ? <PlanningStructure enterprise={enterprise} /> : <Navigate to="/" />}
+                </PrivateRoute>
+              }
+            />
+
+            {/* Gestão de Pacotes */}
+            <Route
+              path="/pacotes"
+              element={
+                <PrivateRoute>
+                  {enterprise ? <GestaoPacotes enterprise={enterprise} /> : <Navigate to="/" />}
+                </PrivateRoute>
+              }
+            />
+
+            {/* Consolidação de Pacotes em Medição */}
+            <Route
+              path="/consolidacao"
+              element={
+                <PrivateRoute roles={["gestor"]}>
+                  {enterprise ? <Consolidation enterprise={enterprise} /> : <Navigate to="/" />}
+                </PrivateRoute>
+              }
+            />
+
+            {/* Setup de Importações */}
+            <Route
+              path="/importacoes"
+              element={
+                <PrivateRoute roles={["admin"]}>
+                  <SetupImportacoes />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Test routes - bypass authentication */}
           <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <Dashboard onSelectEnterprise={setEnterprise} />
-              </PrivateRoute>
-            }
+            path="/test-consolidacao"
+            element={<Consolidation enterprise={{ id: 1, name: 'Empreendimento Teste' }} />}
           />
-
-          {/* Estrutura do Empreendimento */}
           <Route
-            path="/eap"
-            element={
-              <PrivateRoute>
-                {enterprise ? <EstruturaEmpreendimento enterprise={enterprise} /> : <Navigate to="/" />}
-              </PrivateRoute>
-            }
-          />
-
-          {/* Planejamento */}
-          <Route
-            path="/planejamento"
-            element={
-              <PrivateRoute>
-                {enterprise ? <Planejamento enterprise={enterprise} /> : <Navigate to="/" />}
-              </PrivateRoute>
-            }
-          />
-
-          {/* Gestão de Pacotes */}
-          <Route
-            path="/pacotes"
-            element={
-              <PrivateRoute>
-                {enterprise ? <GestaoPacotes enterprise={enterprise} /> : <Navigate to="/" />}
-              </PrivateRoute>
-            }
-          />
-
-          {/* Consolidação de Pacotes em Medição */}
-          <Route
-            path="/consolidacao"
-            element={
-              <PrivateRoute roles={["gestor"]}>
-                {enterprise ? <ConsolidacaoMedicao enterprise={enterprise} /> : <Navigate to="/" />}
-              </PrivateRoute>
-            }
-          />
-
-          {/* Setup de Importações */}
-          <Route
-            path="/importacoes"
-            element={
-              <PrivateRoute roles={["admin"]}>
-                <SetupImportacoes />
-              </PrivateRoute>
-            }
+            path="/test-planejamento"
+            element={<PlanningStructure enterprise={{ id: 1, name: 'Empreendimento Teste' }} />}
           />
 
           {/* Kanban */}
-          <Route
-            path="/kanban"
-            element={
-              <PrivateRoute>
-                {enterprise ? (
-                  <KanbanView
-                    enterprise={enterprise}
-                    onSelectPacote={pacote => {
-                      setSelectedPacote(pacote);
-                      window.location.href = "/pacotes";
-                    }}
-                  />
-                ) : (
-                  <Navigate to="/" />
-                )}
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+            <Route
+              path="/kanban"
+              element={
+                <PrivateRoute>
+                  {enterprise ? (
+                    <KanbanView
+                      enterprise={enterprise}
+                      onSelectPacote={pacote => {
+                        setSelectedPacote(pacote);
+                        window.location.href = "/pacotes";
+                      }}
+                    />
+                  ) : (
+                    <Navigate to="/" />
+                  )}
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </div>
+      </Router>
+    </ProjectProvider>
   );
 }
